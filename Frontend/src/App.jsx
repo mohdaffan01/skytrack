@@ -4,10 +4,19 @@ import About from './components/About';
 import CustomerService from './components/CustomerService';
 import Contact from './components/Contact';
 import Flights from './components/Flights';
+import BookFlight from './components/BookFlight';
 import Footer from './components/Footer';
 
 function App() {
   const [activeSection, setActiveSection] = useState('home');
+  const [selectedFlightData, setSelectedFlightData] = useState(null);
+  const [searchCriteria, setSearchCriteria] = useState(null);
+
+  const handleBookFlight = (flight, searchData) => {
+    setSelectedFlightData(flight);
+    setSearchCriteria(searchData);
+    setActiveSection('bookFlight');
+  };
 
   return (
     <div className="min-h-screen bg-gray-100 pt-20 flex flex-col">
@@ -38,7 +47,8 @@ function App() {
         {activeSection === 'about' && <About />}
         {activeSection === 'service' && <CustomerService />}
         {activeSection === 'contact' && <Contact />}
-        {activeSection === 'flights' && <Flights />}
+        {activeSection === 'flights' && <Flights onBookFlight={handleBookFlight} />}
+        {activeSection === 'bookFlight' && <BookFlight flight={selectedFlightData} search={searchCriteria} onNavClick={setActiveSection} />}
       </div>
       <Footer onNavClick={setActiveSection} />
     </div>

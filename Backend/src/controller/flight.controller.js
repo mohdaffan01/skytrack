@@ -26,7 +26,10 @@ export const createFlight = async (req, res) => {
             departureTime: data.departureTime,
             arrivalTime: data.arrivalTime,
             price: data.price,
-            status: data.status
+            status: data.status,
+            description: data.description,
+            fees: data.fees,
+            visaType: data.visaType
         });
 
         res.status(201).json({
@@ -47,7 +50,19 @@ export const createFlight = async (req, res) => {
 //------------------------get all flights------------------------
 export const getAllFlights = async (req, res) => {
     try {
-        const flights = await Flight.find();
+        const { origin, destination } = req.query;
+        let query = {};
+
+        // Case-insensitive regex matching for flexible searching
+        if (origin) {
+            query.origin = { $regex: origin, $options: 'i' };
+        }
+
+        if (destination) {
+            query.destination = { $regex: destination, $options: 'i' };
+        }
+
+        const flights = await Flight.find(query);
 
         res.status(200).json({
             success: true,

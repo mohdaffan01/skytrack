@@ -23,8 +23,8 @@ const Contact = () => {
 
                             <div className="space-y-6">
                                 {[
-                                    { label: 'Email', value: 'support@skytrack.com', icon: '✉️' },
-                                    { label: 'Phone', value: '+1 (888) SKY-TRAK', icon: '📞' },
+                                    { label: 'Email', value: 'awworldtravel1@gmail.com', icon: '✉️' },
+                                    { label: 'Phone', value: '+91-7895622682', icon: '📞' },
                                     { label: 'Headquarters', value: '123 Aviation Way, Sky City, SC 90210', icon: '🏢' },
                                 ].map((item) => (
                                     <div key={item.label} className="flex items-start gap-4">

@@ -34,6 +34,17 @@ const flightSchema = new mongoose.Schema({
         type: String,
         enum: ['Scheduled', 'On Time', 'Delayed', 'Cancelled'],
         default: 'Scheduled'
+    },
+    description: {
+        type: String
+    },
+    fees: {
+        type: Number,
+        default: 0
+    },
+    visaType: {
+        type: String,
+        default: 'Tourist'
     }
 }, {
     timestamps: true
