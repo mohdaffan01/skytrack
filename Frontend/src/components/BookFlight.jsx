@@ -1,9 +1,23 @@
 import React, { useState } from 'react';
 
-const BookFlight = ({ flight, search, onNavClick }) => {
+const BookFlight = ({ flight, search, onNavClick, currentUser }) => {
     const [bookingState, setBookingState] = useState('filling'); // filling, processing, confirmed
+    const [bookingRef, setBookingRef] = useState('');
+    const [formData, setFormData] = useState({
+        firstName: '',
+        lastName: '',
+        email: '',
+        phone: '',
+        passportNumber: ''
+    });
 
-    // Fallback if accessed without flight data
+    const handleInputChange = (e) => {
+        const { name, value } = e.target;
+        setFormData(prev => ({
+            ...prev,
+            [name]: value
+        }));
+    };
     if (!flight || !search) {
         return (
             <div className="py-20 bg-gray-100 min-h-[80vh] flex flex-col items-center justify-center">
@@ -24,10 +38,56 @@ const BookFlight = ({ flight, search, onNavClick }) => {
         );
     }
 
-    const handleConfirmBooking = (e) => {
+    const handleConfirmBooking = async (e) => {
         e.preventDefault();
         setBookingState('processing');
-        setTimeout(() => setBookingState('confirmed'), 2000); // Simulate API call
+
+        try {
+            const bookingPayload = {
+                flightId: flight._id,
+                userId: currentUser._id, // Strongly associate with logged in user
+                passengerDetails: {
+                    firstName: formData.firstName,
+                    lastName: formData.lastName,
+                    email: formData.email,
+                    phone: formData.phone,
+                    passportNumber: formData.passportNumber,
+                    visaType: flight.visaType || 'Tourist'
+                },
+                searchDetails: {
+                    travellers: search.travellers,
+                    age: search.age,
+                    tripType: search.tripType
+                },
+                paymentDetails: {
+                    basePrice: basePrice,
+                    taxes: taxes,
+                    totalAmount: total
+                }
+            };
+
+            const response = await fetch('http://localhost:5000/api/bookings', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(bookingPayload)
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || 'Failed to create booking');
+            }
+
+            const data = await response.json();
+            setBookingRef(data.booking.bookingReference);
+            setBookingState('confirmed');
+
+        } catch (error) {
+            console.error("Booking failed:", error);
+            alert("There was an error processing your booking: " + error.message);
+            setBookingState('filling');
+        }
     };
 
     // Calculate total layout
@@ -59,8 +119,7 @@ const BookFlight = ({ flight, search, onNavClick }) => {
                         <div className="bg-gray-50 rounded-2xl p-6 mb-8 text-left border border-gray-100">
                             <div className="flex justify-between items-center mb-4">
                                 <span className="text-gray-500 font-bold uppercase tracking-widest text-sm">Booking Ref</span>
-                                {/* eslint-disable-next-line react-hooks/purity */}
-                                <span className="text-gray-900 font-black text-xl tracking-widest">SKY{Math.floor(1000 + Math.random() * 9000)}{flight.flightNumber.substring(0, 2)}</span>
+                                <span className="text-gray-900 font-black text-xl tracking-widest">{bookingRef}</span>
                             </div>
                             <div className="w-full h-px bg-gray-200 mb-4"></div>
                             <div className="flex justify-between items-center">
@@ -94,19 +153,19 @@ const BookFlight = ({ flight, search, onNavClick }) => {
                                     <div>
                                         <h3 className="text-sm font-black text-gray-400 uppercase tracking-widest mb-4">Primary Contact</h3>
                                         <div className="grid md:grid-cols-2 gap-4">
-                                            <input type="text" required placeholder="First Name" className="w-full px-5 py-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600 transition-all font-semibold" />
-                                            <input type="text" required placeholder="Last Name" className="w-full px-5 py-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600 transition-all font-semibold" />
+                                            <input type="text" name="firstName" value={formData.firstName} onChange={handleInputChange} required placeholder="First Name" className="w-full px-5 py-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600 transition-all font-semibold" />
+                                            <input type="text" name="lastName" value={formData.lastName} onChange={handleInputChange} required placeholder="Last Name" className="w-full px-5 py-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600 transition-all font-semibold" />
                                         </div>
                                     </div>
                                     <div className="grid md:grid-cols-2 gap-4">
-                                        <input type="email" required placeholder="Email Address" className="w-full px-5 py-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600 transition-all font-semibold" />
-                                        <input type="tel" required placeholder="Phone Number" className="w-full px-5 py-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600 transition-all font-semibold" />
+                                        <input type="email" name="email" value={formData.email} onChange={handleInputChange} required placeholder="Email Address" className="w-full px-5 py-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600 transition-all font-semibold" />
+                                        <input type="tel" name="phone" value={formData.phone} onChange={handleInputChange} required placeholder="Phone Number" className="w-full px-5 py-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600 transition-all font-semibold" />
                                     </div>
 
                                     <div className="pt-6 border-t border-gray-100">
                                         <h3 className="text-sm font-black text-gray-400 uppercase tracking-widest mb-4">Passport / Visa Information</h3>
                                         <div className="grid md:grid-cols-2 gap-4">
-                                            <input type="text" placeholder="Passport Number (Optional for domestic)" className="w-full px-5 py-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600 transition-all font-semibold" />
+                                            <input type="text" name="passportNumber" value={formData.passportNumber} onChange={handleInputChange} placeholder="Passport Number (Optional for domestic)" className="w-full px-5 py-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600 transition-all font-semibold" />
                                             <div className="relative">
                                                 <div className="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none">
                                                     <span className="text-gray-400 font-semibold text-sm">Req. Visa:</span>

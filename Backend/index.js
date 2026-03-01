@@ -6,6 +6,7 @@ import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import flightRoutes from './src/routes/flight.routes.js';
 import userRoutes from './src/routes/user.routes.js';
+import bookingRoutes from './src/routes/bookFlight.routes.js';
 
 const app = express();
 
@@ -20,6 +21,7 @@ app.use(cookieParser());
 // Routes
 app.use('/api/flights', flightRoutes);
 app.use('/api/users', userRoutes);
+app.use('/api/bookings', bookingRoutes);
 
 // Database Connection
 const MONGODB_URI = process.env.MONGODB_URI;

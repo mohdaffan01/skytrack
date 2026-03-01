@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import bgflightimage from '../assets/bgflightimage.jpg';
 
 const Flights = ({ onBookFlight }) => {
     const [searchData, setSearchData] = useState({
@@ -168,15 +169,23 @@ const Flights = ({ onBookFlight }) => {
     };
 
     return (
-        <section className="py-20 bg-gray-100">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="text-center mb-16">
-                    <h2 className="text-4xl font-black text-gray-900 mb-4">Flight Explorer</h2>
-                    <p className="text-gray-600 max-w-2xl mx-auto">
+        <section className="bg-gray-100 min-h-screen">
+            {/* Top Background Hero Section */}
+            <div
+                className="pt-24 pb-32 bg-cover bg-center relative"
+                style={{ backgroundImage: `url(${bgflightimage})` }}
+            >
+                <div className="absolute inset-0 bg-black/30 z-0 mix-blend-multiply"></div>
+
+                <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center pt-8">
+                    <h2 className="text-5xl font-black text-white mb-6 drop-shadow-md">Flight Explorer</h2>
+                    <p className="text-white/90 text-xl font-medium max-w-2xl mx-auto drop-shadow-md">
                         Search and track thousands of flights worldwide with real-time updates.
                     </p>
-                    <div className="w-20 h-1.5 bg-blue-600 mx-auto rounded-full mt-6"></div>
                 </div>
+            </div>
+
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-24 relative z-20">
 
                 {/* Search Functionality */}
                 <div className="bg-gray-50 rounded-3xl p-8 lg:p-12 border border-gray-100 shadow-xl max-w-4xl mx-auto">

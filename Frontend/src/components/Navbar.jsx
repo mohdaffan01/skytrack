@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-const Navbar = ({ onNavClick }) => {
+const Navbar = ({ onNavClick, currentUser, onLogout }) => {
     const [isOpen, setIsOpen] = useState(false);
 
     const navLinks = [
@@ -37,9 +37,24 @@ const Navbar = ({ onNavClick }) => {
                                 {link.name}
                             </button>
                         ))}
-                        <button className="bg-blue-600 text-white px-6 py-2.5 rounded-full text-sm font-bold hover:bg-blue-700 transition-all shadow-lg shadow-blue-200 hover:scale-105 active:scale-95">
-                            Log In / Sign Up
-                        </button>
+                        {currentUser ? (
+                            <div className="flex items-center gap-4">
+                                <span className="font-bold text-gray-700">Hi, {currentUser.name.split(' ')[0]}</span>
+                                <button
+                                    onClick={onLogout}
+                                    className="bg-gray-100 text-gray-700 px-6 py-2.5 rounded-full text-sm font-bold hover:bg-gray-200 transition-all active:scale-95 cursor-pointer border border-gray-200"
+                                >
+                                    Log Out
+                                </button>
+                            </div>
+                        ) : (
+                            <button
+                                onClick={() => handleNavClick('login')}
+                                className="bg-blue-600 text-white px-6 py-2.5 rounded-full text-sm font-bold hover:bg-blue-700 transition-all shadow-lg shadow-blue-200 hover:scale-105 active:scale-95 cursor-pointer"
+                            >
+                                Log In / Sign Up
+                            </button>
+                        )}
                     </div>
 
                     {/* Mobile menu button (Simplified) */}
@@ -76,9 +91,26 @@ const Navbar = ({ onNavClick }) => {
                             </button>
                         ))}
                         <div className="pt-2">
-                            <button className="w-full text-center bg-blue-600 text-white px-6 py-4 rounded-xl text-base font-black hover:bg-blue-700 transition-colors shadow-lg shadow-blue-200">
-                                Log In / Sign Up
-                            </button>
+                            {currentUser ? (
+                                <div className="space-y-2">
+                                    <div className="px-4 py-2 text-sm font-bold text-gray-500 bg-gray-50 rounded-lg text-center mx-2 border border-gray-100">
+                                        Logged in as <span className="text-gray-900">{currentUser.name}</span>
+                                    </div>
+                                    <button
+                                        onClick={() => { onLogout(); setIsOpen(false); }}
+                                        className="w-full text-center bg-gray-100 text-gray-800 px-6 py-4 rounded-xl text-base font-black hover:bg-gray-200 transition-colors border border-gray-200"
+                                    >
+                                        Log Out
+                                    </button>
+                                </div>
+                            ) : (
+                                <button
+                                    onClick={() => handleNavClick('login')}
+                                    className="w-full text-center bg-blue-600 text-white px-6 py-4 rounded-xl text-base font-black hover:bg-blue-700 transition-colors shadow-lg shadow-blue-200"
+                                >
+                                    Log In / Sign Up
+                                </button>
+                            )}
                         </div>
                     </div>
                 </div>
