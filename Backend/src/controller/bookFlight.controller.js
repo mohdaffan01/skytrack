@@ -76,3 +76,44 @@ export const getUserBookings = async (req, res) => {
         res.status(500).json({ message: 'Server error while fetching bookings' });
     }
 };
+
+
+export const getAllBookings = async (req, res) => {
+    try {
+        const bookings = await BookFlight.find({})
+            .populate('user', 'name email')
+            .populate('flight', 'flightNumber airline origin destination departureTime arrivalTime')
+            .sort({ createdAt: -1 });
+
+        res.status(200).json(bookings);
+    } catch (error) {
+        console.error('Error fetching all bookings:', error);
+        res.status(500).json({ message: 'Server error while fetching all bookings' });
+    }
+};
+
+export const deleteBooking = async (req, res) => {
+    try {
+        const booking = await BookFlight.findByIdAndDelete(req.params.id);
+
+        if (!booking) {
+            return res.status(404).json({
+                success: false,
+                message: "Booking not found"
+            });
+        }
+
+        res.status(200).json({
+            success: true,
+            message: "Booking deleted successfully"
+        });
+
+    } catch (error) {
+        console.error('Error deleting booking:', error);
+        res.status(500).json({
+            success: false,
+            message: "Failed to delete booking",
+            error: error.message
+        });
+    }
+};

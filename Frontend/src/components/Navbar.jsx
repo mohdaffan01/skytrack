@@ -37,6 +37,14 @@ const Navbar = ({ onNavClick, currentUser, onLogout }) => {
                                 {link.name}
                             </button>
                         ))}
+                        {currentUser?.role === 'admin' && (
+                            <button
+                                onClick={() => handleNavClick('admin')}
+                                className="text-sm font-semibold text-purple-600 hover:text-purple-800 transition-colors cursor-pointer bg-transparent border-none flex items-center"
+                            >
+                                <span className="mr-1">⚙️</span> Admin
+                            </button>
+                        )}
                         {currentUser ? (
                             <div className="flex items-center gap-4">
                                 <span className="font-bold text-gray-700">Hi, {currentUser.name.split(' ')[0]}</span>
@@ -90,6 +98,14 @@ const Navbar = ({ onNavClick, currentUser, onLogout }) => {
                                 {link.name}
                             </button>
                         ))}
+                        {currentUser?.role === 'admin' && (
+                            <button
+                                onClick={() => handleNavClick('admin')}
+                                className="block w-full text-left px-4 py-3 rounded-xl text-base font-black text-purple-700 hover:text-purple-800 hover:bg-purple-50 transition-colors"
+                            >
+                                ⚙️ Admin Dashboard
+                            </button>
+                        )}
                         <div className="pt-2">
                             {currentUser ? (
                                 <div className="space-y-2">

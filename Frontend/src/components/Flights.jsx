@@ -178,8 +178,8 @@ const Flights = ({ onBookFlight }) => {
                 <div className="absolute inset-0 bg-black/30 z-0 mix-blend-multiply"></div>
 
                 <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center pt-8">
-                    <h2 className="text-5xl font-black text-white mb-6 drop-shadow-md">Flight Explorer</h2>
-                    <p className="text-white/90 text-xl font-medium max-w-2xl mx-auto drop-shadow-md">
+                    <h2 className="text-5xl font-black text-gray-100 mb-6 drop-shadow-md">Flight <span className="text-blue-800">Explorer</span></h2>
+                    <p className="text-gray-50 text-xl font-medium max-w-2xl mx-auto drop-shadow-md">
                         Search and track thousands of flights worldwide with real-time updates.
                     </p>
                 </div>
@@ -188,7 +188,7 @@ const Flights = ({ onBookFlight }) => {
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-24 relative z-20">
 
                 {/* Search Functionality */}
-                <div className="bg-gray-50 rounded-3xl p-8 lg:p-12 border border-gray-100 shadow-xl max-w-4xl mx-auto">
+                <div className="bg-gray-50 rounded-2xl p-8 lg:p-12 border border-gray-100 shadow-xl max-w-4xl mx-auto">
                     {/* Top Options */}
                     <div className="flex flex-wrap items-center justify-between gap-6 mb-10 pb-8 border-b border-gray-200/60">
                         <div className="flex items-center space-x-8">

@@ -8,6 +8,7 @@ import BookFlight from './components/BookFlight';
 import Footer from './components/Footer';
 import Login from './components/Login';
 import Signup from './components/Signup';
+import AdminDashboard from './components/admin-dashboard-ui/AdminDashboard';
 
 function App() {
   const [activeSection, setActiveSection] = useState('home');
@@ -72,6 +73,7 @@ function App() {
         {activeSection === 'bookFlight' && <BookFlight flight={selectedFlightData} search={searchCriteria} onNavClick={setActiveSection} currentUser={currentUser} />}
         {activeSection === 'login' && <Login onNavClick={setActiveSection} onLogin={handleLogin} />}
         {activeSection === 'signup' && <Signup onNavClick={setActiveSection} onLogin={handleLogin} />}
+        {activeSection === 'admin' && <AdminDashboard currentUser={currentUser} />}
       </div>
       <Footer onNavClick={setActiveSection} />
     </div>
