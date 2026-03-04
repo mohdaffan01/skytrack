@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import bgflightimage from '../assets/bgflightimage.jpg';
+import api from '../../api/axiosConfig';
+import bgflightimage from '../../assets/bgflightimage.jpg';
 
 const Flights = ({ onBookFlight }) => {
     const [searchData, setSearchData] = useState({
@@ -31,9 +32,9 @@ const Flights = ({ onBookFlight }) => {
     useEffect(() => {
         const fetchPopularDestinations = async () => {
             try {
-                const response = await fetch('http://localhost:5000/api/flights');
-                if (response.ok) {
-                    const data = await response.json();
+                const response = await api.get('/flights');
+                if (response.status === 200) {
+                    const data = response.data;
                     const allFlights = data.data || data.flights || [];
 
                     const uniqueDests = [];
@@ -128,19 +129,14 @@ const Flights = ({ onBookFlight }) => {
             // if (searchData.date) params.append('date', searchData.date);
 
             const queryString = params.toString();
-            const url = `http://localhost:5000/api/flights${queryString ? `?${queryString}` : ''}`;
+            const url = `/flights${queryString ? `?${queryString}` : ''}`;
 
-            const response = await fetch(url);
-
-            if (!response.ok) {
-                throw new Error('Failed to fetch flights');
-            }
-
-            const data = await response.json();
+            const response = await api.get(url);
+            const data = response.data;
             setFlights(data.data || data.flights || []); // Adjust based on your API response structure
 
         } catch (err) {
-            setError(err.message || 'An error occurred while searching for flights');
+            setError(err.response?.data?.message || err.message || 'An error occurred while searching for flights');
         } finally {
             setLoading(false);
         }
@@ -152,17 +148,12 @@ const Flights = ({ onBookFlight }) => {
         setHasSearched(true);
 
         try {
-            const response = await fetch('http://localhost:5000/api/flights');
-
-            if (!response.ok) {
-                throw new Error('Failed to fetch flights');
-            }
-
-            const data = await response.json();
+            const response = await api.get('/flights');
+            const data = response.data;
             setFlights(data.data || data.flights || []);
 
         } catch (err) {
-            setError(err.message || 'An error occurred while fetching all flights');
+            setError(err.response?.data?.message || err.message || 'An error occurred while fetching all flights');
         } finally {
             setLoading(false);
         }

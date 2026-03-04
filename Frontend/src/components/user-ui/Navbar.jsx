@@ -20,7 +20,7 @@ const Navbar = ({ onNavClick, currentUser, onLogout }) => {
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex justify-between items-center h-20">
                     {/* Logo */}
-                    <div className="flex-shrink-0 flex items-center cursor-pointer" onClick={() => handleNavClick('home')}>
+                    <div className="flex-shrink-0 flex items-center cursor-pointer" onClick={() => handleNavClick('flights')}>
                         <span className="text-2xl font-black bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent tracking-tight">
                             SkyTrack
                         </span>

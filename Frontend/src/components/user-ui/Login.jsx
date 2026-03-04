@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import api from '../../api/axiosConfig';
 
 const Login = ({ onNavClick, onLogin }) => {
     const [formData, setFormData] = useState({
@@ -14,22 +15,12 @@ const Login = ({ onNavClick, onLogin }) => {
         e.preventDefault();
 
         try {
-            const response = await fetch('http://localhost:5000/api/users/login', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    email: formData.email,
-                    password: formData.password,
-                })
+            const response = await api.post('/users/login', {
+                email: formData.email,
+                password: formData.password,
             });
 
-            const data = await response.json();
-
-            if (!response.ok) {
-                throw new Error(data.message || 'Login failed');
-            }
+            const data = response.data;
 
             console.log('Login Successful', data);
 
@@ -41,7 +32,8 @@ const Login = ({ onNavClick, onLogin }) => {
 
         } catch (error) {
             console.error('Login Error:', error);
-            alert("Error: " + error.message);
+            const errorMessage = error.response?.data?.message || error.message || 'Login failed';
+            alert("Error: " + errorMessage);
         }
     };
 

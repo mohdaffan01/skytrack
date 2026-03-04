@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import api from '../../api/axiosConfig';
 
 const ViewBookings = ({ currentUser }) => {
     const [bookings, setBookings] = useState([]);
@@ -11,20 +12,15 @@ const ViewBookings = ({ currentUser }) => {
 
     const fetchBookings = async () => {
         try {
-            const response = await fetch('http://localhost:5000/api/bookings', {
+            const response = await api.get('/bookings', {
                 headers: {
                     Authorization: `Bearer ${currentUser.token}`,
                 },
             });
-            const data = await response.json();
-
-            if (!response.ok) {
-                throw new Error(data.message || 'Failed to fetch bookings');
-            }
-
+            const data = response.data;
             setBookings(data || []);
         } catch (err) {
-            setError(err.message);
+            setError(err.response?.data?.message || err.message || 'Failed to fetch bookings');
         } finally {
             setLoading(false);
         }
@@ -34,21 +30,15 @@ const ViewBookings = ({ currentUser }) => {
         if (!window.confirm('Are you sure you want to delete this booking?')) return;
 
         try {
-            const response = await fetch(`http://localhost:5000/api/bookings/${bookingId}`, {
-                method: 'DELETE',
+            await api.delete(`/bookings/${bookingId}`, {
                 headers: {
                     Authorization: `Bearer ${currentUser.token}`,
                 },
             });
 
-            if (!response.ok) {
-                const data = await response.json();
-                throw new Error(data.message || 'Failed to delete booking');
-            }
-
             setBookings(bookings.filter(b => b._id !== bookingId));
         } catch (err) {
-            alert(err.message);
+            alert(err.response?.data?.message || err.message || 'Failed to delete booking');
         }
     };
 

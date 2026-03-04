@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import api from '../../api/axiosConfig';
 
 const Signup = ({ onNavClick, onLogin }) => {
     const [formData, setFormData] = useState({
@@ -19,24 +20,14 @@ const Signup = ({ onNavClick, onLogin }) => {
             // Combine first and last name for the backend 'name' field
             const fullName = `${formData.firstName} ${formData.lastName}`.trim();
 
-            const response = await fetch('http://localhost:5000/api/users/signup', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    name: fullName,
-                    email: formData.email,
-                    password: formData.password,
-                    role: 'user'
-                })
+            const response = await api.post('/users/signup', {
+                name: fullName,
+                email: formData.email,
+                password: formData.password,
+                role: 'user'
             });
 
-            const data = await response.json();
-
-            if (!response.ok) {
-                throw new Error(data.message || 'Signup failed');
-            }
+            const data = response.data;
 
             console.log('Signup Successful', data);
             alert("Account successfully created! You are now logged in.");
@@ -48,7 +39,8 @@ const Signup = ({ onNavClick, onLogin }) => {
 
         } catch (error) {
             console.error('Signup Error:', error);
-            alert("Error: " + error.message);
+            const errorMessage = error.response?.data?.message || error.message || 'Signup failed';
+            alert("Error: " + errorMessage);
         }
     };
 

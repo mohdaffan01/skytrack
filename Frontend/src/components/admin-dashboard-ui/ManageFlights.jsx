@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import api from '../../api/axiosConfig';
 
 const ManageFlights = ({ currentUser }) => {
     const [flights, setFlights] = useState([]);
@@ -11,16 +12,11 @@ const ManageFlights = ({ currentUser }) => {
 
     const fetchFlights = async () => {
         try {
-            const response = await fetch('http://localhost:5000/api/flights');
-            const data = await response.json();
-
-            if (!response.ok) {
-                throw new Error(data.message || 'Failed to fetch flights');
-            }
-
+            const response = await api.get('/flights');
+            const data = response.data;
             setFlights(data.flights || []);
         } catch (err) {
-            setError(err.message);
+            setError(err.response?.data?.message || err.message || 'Failed to fetch flights');
         } finally {
             setLoading(false);
         }
@@ -30,21 +26,15 @@ const ManageFlights = ({ currentUser }) => {
         if (!window.confirm('Are you sure you want to delete this flight?')) return;
 
         try {
-            const response = await fetch(`http://localhost:5000/api/flights/${flightId}`, {
-                method: 'DELETE',
+            await api.delete(`/flights/${flightId}`, {
                 headers: {
                     Authorization: `Bearer ${currentUser.token}`,
                 },
             });
 
-            if (!response.ok) {
-                const data = await response.json();
-                throw new Error(data.message || 'Failed to delete flight');
-            }
-
             setFlights(flights.filter(f => f._id !== flightId));
         } catch (err) {
-            alert(err.message);
+            alert(err.response?.data?.message || err.message || 'Failed to delete flight');
         }
     };
 

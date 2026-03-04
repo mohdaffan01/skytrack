@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import api from '../../api/axiosConfig';
 
 const BookFlight = ({ flight, search, onNavClick, currentUser }) => {
     const [bookingState, setBookingState] = useState('filling'); // filling, processing, confirmed
@@ -66,26 +67,15 @@ const BookFlight = ({ flight, search, onNavClick, currentUser }) => {
                 }
             };
 
-            const response = await fetch('http://localhost:5000/api/bookings', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(bookingPayload)
-            });
-
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.message || 'Failed to create booking');
-            }
-
-            const data = await response.json();
+            const response = await api.post('/bookings', bookingPayload);
+            const data = response.data;
             setBookingRef(data.booking.bookingReference);
             setBookingState('confirmed');
 
         } catch (error) {
             console.error("Booking failed:", error);
-            alert("There was an error processing your booking: " + error.message);
+            const errorMessage = error.response?.data?.message || error.message || 'Failed to create booking';
+            alert("There was an error processing your booking: " + errorMessage);
             setBookingState('filling');
         }
     };
@@ -128,8 +118,8 @@ const BookFlight = ({ flight, search, onNavClick, currentUser }) => {
                             </div>
                         </div>
 
-                        <button onClick={() => onNavClick('home')} className="bg-gray-900 text-white px-8 py-4 rounded-xl font-bold hover:bg-blue-600 transition-colors shadow-lg">
-                            Return Home
+                        <button onClick={() => onNavClick('flights')} className="bg-gray-900 text-white px-8 py-4 rounded-xl font-bold hover:bg-blue-600 transition-colors shadow-lg">
+                            Return to Flights
                         </button>
                     </div>
                 ) : (

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import api from '../../api/axiosConfig';
 
 const AddFlight = ({ currentUser }) => {
     const [formData, setFormData] = useState({
@@ -28,20 +29,11 @@ const AddFlight = ({ currentUser }) => {
         setSuccess(null);
 
         try {
-            const response = await fetch('http://localhost:5000/api/flights', {
-                method: 'POST',
+            await api.post('/flights', formData, {
                 headers: {
-                    'Content-Type': 'application/json',
                     Authorization: `Bearer ${currentUser.token}`,
                 },
-                body: JSON.stringify(formData),
             });
-
-            const data = await response.json();
-
-            if (!response.ok) {
-                throw new Error(data.message || 'Failed to add flight');
-            }
 
             setSuccess('Flight added successfully!');
             // Reset form
@@ -58,7 +50,7 @@ const AddFlight = ({ currentUser }) => {
                 visaType: 'Tourist'
             });
         } catch (err) {
-            setError(err.message);
+            setError(err.response?.data?.message || err.message || 'Failed to add flight');
         } finally {
             setLoading(false);
         }

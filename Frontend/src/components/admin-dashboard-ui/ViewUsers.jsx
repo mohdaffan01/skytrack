@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import api from '../../api/axiosConfig';
 
 const ViewUsers = ({ currentUser }) => {
     const [users, setUsers] = useState([]);
@@ -11,20 +12,15 @@ const ViewUsers = ({ currentUser }) => {
 
     const fetchUsers = async () => {
         try {
-            const response = await fetch('http://localhost:5000/api/users', {
+            const response = await api.get('/users', {
                 headers: {
                     Authorization: `Bearer ${currentUser.token}`,
                 },
             });
-            const data = await response.json();
-
-            if (!response.ok) {
-                throw new Error(data.message || 'Failed to fetch users');
-            }
-
+            const data = response.data;
             setUsers(data.users || []);
         } catch (err) {
-            setError(err.message);
+            setError(err.response?.data?.message || err.message || 'Failed to fetch users');
         } finally {
             setLoading(false);
         }
@@ -34,21 +30,15 @@ const ViewUsers = ({ currentUser }) => {
         if (!window.confirm('Are you sure you want to delete this user?')) return;
 
         try {
-            const response = await fetch(`http://localhost:5000/api/users/${userId}`, {
-                method: 'DELETE',
+            await api.delete(`/users/${userId}`, {
                 headers: {
                     Authorization: `Bearer ${currentUser.token}`,
                 },
             });
 
-            if (!response.ok) {
-                const data = await response.json();
-                throw new Error(data.message || 'Failed to delete user');
-            }
-
             setUsers(users.filter(u => u._id !== userId));
         } catch (err) {
-            alert(err.message);
+            alert(err.response?.data?.message || err.message || 'Failed to delete user');
         }
     };
 
