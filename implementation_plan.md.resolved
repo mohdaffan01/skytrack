@@ -1,0 +1,54 @@
+# Implement Email Verification System
+
+This plan describes how to build a production-level email verification system. Users will not be able to log in until they click a secure link sent to their email.
+
+## User Review Required
+
+> [!IMPORTANT]
+> Since we are adding an `isVerified` field to the User schema, **all existing users in your database will not be able to log in** unless we either:
+> 1. Manually update existing users in MongoDB to `isVerified: true`.
+> 2. Create a script to do it for you.
+> For new users, the flow will work perfectly.
+
+## Proposed Changes
+
+### MongoDB Schema
+
+#### [MODIFY] [src/model/user.model.js](file:///c:/Java-Script/projects/skytrack/Backend/src/model/user.model.js)
+- Add `isVerified` boolean field, defaulting to `false`.
+- Add `verificationToken` string field.
+- Add `verificationTokenExpiresAt` date field to limit how long a link is valid (e.g., 24 hours).
+
+### Email Utility
+
+#### [NEW/MODIFY] [src/utils/emailService.js](file:///c:/Java-Script/projects/skytrack/Backend/src/utils/emailService.js) (Recreated)
+- Recreate the Nodemailer transporter (since it was accidentally deleted in the previous action).
+- Add a new `sendVerificationEmail(userEmail, userName, verificationUrl)` function with a professional, secure HTML template containing the verification link.
+- Restore the `sendWelcomeEmail` and `sendBookingConfirmationEmail` functions.
+
+### Controllers & Routes
+
+#### [MODIFY] [src/controller/user.controller.js](file:///c:/Java-Script/projects/skytrack/Backend/src/controller/user.controller.js)
+- **In [signupUser](file:///c:/Java-Script/projects/skytrack/Backend/src/controller/user.controller.js#24-67)**: 
+  - Generate a secure random crypto token.
+  - Set `isVerified=false` and save the token/expiration to the database.
+  - Call the new email service to send the `http://localhost:5000/api/users/verify-email/:token` link instead of the standard welcome email. (We can send the welcome email *after* verification).
+- **In [loginUser](file:///c:/Java-Script/projects/skytrack/Backend/src/controller/user.controller.js#68-111)**:
+  - Before checking passwords, check if `user.isVerified === true`.
+  - If false, return a `403 Forbidden` structured message: "Please verify your email first to login."
+- **[NEW] `verifyEmail` controller**:
+  - Accept a token from the URL params.
+  - Find the user who has that exact token and where the expiration date is still in the future.
+  - If valid, set `isVerified=true`, clear the token fields, and save.
+  - Redirect the user to the frontend login page or return a success JSON message.
+
+#### [MODIFY] `src/routes/user.routes.js`
+- Add the `GET /verify-email/:token` route pointing to the `verifyEmail` controller.
+
+## Verification Plan
+
+### Manual Verification
+1. Attempt to sign up with a new user. Verify the database sets `isVerified: false` and generates a token.
+2. Attempt to log in with that new user immediately. Verify it fails with the "Please verify your email first" message.
+3. Check the user's email inbox, click the verification link.
+4. Attempt to log in again. Verify it succeeds and generates a JWT token.
